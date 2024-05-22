@@ -1,0 +1,7 @@
+<div class="container clickable" (click)="buttonClick()">
+    @if (showBlinkingButton()) {
+      <img [src]="'assets/crosswalk/crosswalk-blinking-btn' + leftSrcSuffix + '.png'" class="crosswalk-button-img">
+    } @else {
+      <img [src]="'assets/crosswalk/crosswalk-btn' + leftSrcSuffix + '.png'" class="crosswalk-button-img">
+    }
+</div>

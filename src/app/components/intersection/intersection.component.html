@@ -1,0 +1,28 @@
+<div class="container">
+  <img src="assets/background.png" class="background-image">
+
+  <div class="street-container">
+    <app-street
+      [direction]="StreetDirection.Down"
+      [laneCount]="laneCount"
+      class="street street-on-left"
+    ></app-street>
+    <app-street
+      [direction]="StreetDirection.Up"
+      [laneCount]="laneCount"
+      class="street street-on-right"
+      ></app-street>
+  </div>
+  <div class="street-container horizontal-street">
+    <app-street
+      [direction]="StreetDirection.Left"
+      [laneCount]="laneCount"
+      class="street street-on-left"
+    ></app-street>
+    <app-street
+      [direction]="StreetDirection.Right"
+      [laneCount]="laneCount"
+      class="street street-on-right"
+    ></app-street>
+  </div>
+</div>

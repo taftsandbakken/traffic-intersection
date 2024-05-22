@@ -1,0 +1,54 @@
+<div
+  class="container"
+  [class]="{'clickable': type === LaneType.Incoming}"
+  (click)="laneClick()"
+>
+  @if (type === LaneType.Incoming) {
+    <div class="arrow-container">
+      @if (id === 0) {
+        <mat-icon
+          aria-hidden="false"
+          aria-label="Arrow icon"
+          fontIcon="subdirectory_arrow_right"
+          class="arrow left-arrow"
+        ></mat-icon>
+      }
+
+      @if (id > 0 && id < laneCount - 1) {
+        <mat-icon
+          aria-hidden="false"
+          aria-label="Arrow icon"
+          fontIcon="straight"
+          class="arrow straight-arrow"
+        ></mat-icon>
+      }
+
+      @if (id === laneCount - 1) {
+        <mat-icon
+          aria-hidden="false"
+          aria-label="Arrow icon"
+          fontIcon="subdirectory_arrow_left"
+          class="arrow right-arrow"
+        ></mat-icon>
+      }
+    </div>
+  }
+
+  @if (type === LaneType.Incoming) {
+    <div class="car-container">
+      <img
+        src="assets/red-car.png"
+        *ngFor="let incomingCarSpace of incomingCarLine"
+        class="car-img"
+        [class]="{'show-car': incomingCarSpace}">
+    </div>
+  } @else {
+    <div class="car-container outgoing-car-container">
+      <img
+        src="assets/red-car.png"
+        *ngFor="let outgoingCarSpace of outgoingCarLine"
+        class="car-img"
+        [class]="{'show-car': outgoingCarSpace}">
+    </div>
+  }
+</div>

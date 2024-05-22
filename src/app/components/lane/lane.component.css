@@ -1,0 +1,46 @@
+.container {
+  height: 88%;
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.arrow-container {
+  display: flex;
+  justify-content: center;
+}
+
+.arrow {
+  color: white;
+}
+
+.right-arrow, .left-arrow {
+  transform: rotate(180deg);
+}
+
+.car-container {
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: space-evenly;
+  height: 100%;
+}
+
+.outgoing-car-container {
+  height: 108%;
+}
+
+.car-img {
+  width: 100%;
+  margin-bottom: 8px;
+  visibility: collapse;
+}
+
+.show-car {
+  visibility: visible;
+}
+
+.car-count {
+  color: white;
+  text-align: center;
+}

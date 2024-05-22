@@ -1,0 +1,43 @@
+.header-text {
+  width: 100%;
+  text-align: center;
+}
+
+.toggle-start-auto-button {
+  position: absolute;
+  right: 16px;
+}
+
+.toggle-start-manual-button {
+  position: absolute;
+  right: 150px;
+}
+
+.toggle-log-button {
+  position: absolute;
+  right: 306px;
+}
+
+.log-header {
+  text-decoration: underline;
+}
+
+.state-log {
+  position: absolute;
+  right: 5%;
+  top: 60px;
+  bottom: 20px;
+  width: 210px;
+  overflow: auto;
+  overflow-wrap: break-word;
+}
+
+.log-item {
+  margin-bottom: 8px;
+}
+
+@media only screen and (max-width: 1420px) {
+  .state-log {
+    right: 12px;
+  }
+}

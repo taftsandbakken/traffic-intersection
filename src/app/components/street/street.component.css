@@ -1,0 +1,47 @@
+.container {
+  height: 100%;
+  width: 100%;
+}
+
+.lane-container {
+  position: absolute;
+  display: flex;
+  width: 100%;
+  height: 24%;
+}
+
+.incoming-lanes {
+  bottom: 0;
+}
+
+.lane {
+  display: block;
+  height: 100%;
+  width: 25%;
+}
+
+.traffic-light {
+  display: block;
+  position: absolute;
+  left: 24%;
+  bottom: 31%;
+  width: 50%;
+  height: 12%;
+}
+
+.pedestrian-button {
+  position: absolute;
+  width: 28%;
+  height: 10%;
+}
+
+.incoming-lanes-ped-button {
+  right: -32%;
+  bottom: 18%;
+}
+
+.outgoing-lanes-ped-button {
+  right: -30%;
+  top: 16%;
+  transform: rotate(180deg);
+}

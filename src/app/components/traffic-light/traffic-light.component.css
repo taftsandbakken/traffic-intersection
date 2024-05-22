@@ -1,0 +1,12 @@
+.container {
+  width: 100%;
+  height: 100%;
+}
+
+.traffic-img {
+  width: 40%;
+}
+
+.left-turn-light {
+  margin-right: 20%;
+}

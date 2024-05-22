@@ -1,0 +1,35 @@
+.container {
+  position: relative;
+  width: fit-content;
+  margin: 0 auto;
+}
+
+.background-image {
+  height: calc(100vh - 68px);
+}
+
+.street-container {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 32%;
+  width: 36%;
+}
+
+.horizontal-street {
+  transform: rotate(90deg);
+}
+
+.street-on-left {
+  transform: rotate(180deg);
+}
+
+.street-on-right {
+  right: 0;
+}
+
+.street {
+  position: absolute;
+  width: 48%;
+  height: 100%;
+}

@@ -1,0 +1,64 @@
+<mat-toolbar>
+  <span class="header-text">Traffic Intersection Simulator</span>
+  @if (showLog) {
+    <button
+      mat-stroked-button
+      color="primary"
+      (click)="showLog = false"
+      class="toggle-log-button"
+    >
+      Hide Log
+    </button>
+  } @else {
+    <button
+      mat-stroked-button
+      color="primary"
+      (click)="showLog = true"
+      class="toggle-log-button"
+    >
+      Show Log
+    </button>
+  }
+
+  @if (simulationState === SimulationState.Stopped) {
+    <button
+      mat-stroked-button
+      color="primary"
+      (click)="startSimulation(SimulationState.RunningManual)"
+      class="toggle-start-manual-button"
+      matTooltip="Start the simulation on manual, meaning cars will only come if you click on the incoming lanes"
+    >
+      Start (Manual)
+    </button>
+    <button
+      mat-stroked-button
+      color="primary"
+      (click)="startSimulation(SimulationState.RunningAuto)"
+      class="toggle-start-auto-button"
+      matTooltip="Start the simulation on auto, meaning cars will come automatically"
+    >
+      Start (Auto)
+    </button>
+  } @else {
+    <button
+      mat-stroked-button
+      color="warn"
+      (click)="endSimulation()"
+      class="toggle-start-button"
+      matTooltip="End the Simulation"
+    >
+      End Simulation
+    </button>
+  }
+</mat-toolbar>
+
+<app-intersection [laneCount]="LANE_COUNT"></app-intersection>
+
+@if (showLog) {
+  <div class="state-log">
+    <h4 class="log-header">Traffic Light State Log</h4>
+    @for (log of stateLog; track log) {
+      <div class="log-item">{{log}}</div>
+    }
+  </div>
+}

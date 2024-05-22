@@ -1,0 +1,52 @@
+<div
+  class="container"
+>
+  <div
+    class="lane-container incoming-lanes"
+  >
+    @for (i of laneIds; track i) {
+      <app-lane
+        class="lane"
+        [direction]="direction"
+        [type]="LaneType.Incoming"
+        [id]="i"
+        [laneCount]="laneCount"
+        [currentState]="currentState"
+      ></app-lane>
+    }
+  </div>
+  <div
+    class="lane-container outgoing-lanes"
+  >
+    @for (i of laneIds; track i) {
+      <app-lane
+        class="lane"
+        [direction]="direction"
+        [type]="LaneType.Outgoing"
+        [id]="i"
+        [laneCount]="laneCount"
+        [currentState]="currentState"
+        [incomingLaneId]="getIncomingLaneId(direction, i)"
+      ></app-lane>
+    }
+  </div>
+
+  <app-traffic-light
+    class="traffic-light"
+    [currentState]="currentState"
+    [direction]="direction"
+  ></app-traffic-light>
+
+  <app-pedestrian-button
+    class="pedestrian-button incoming-lanes-ped-button"
+    [type]="LaneType.Incoming"
+    [direction]="direction"
+    [currentState]="currentState"
+  ></app-pedestrian-button>
+  <app-pedestrian-button
+    class="pedestrian-button outgoing-lanes-ped-button"
+    [type]="LaneType.Outgoing"
+    [direction]="direction"
+    [currentState]="currentState"
+  ></app-pedestrian-button>
+</div>
