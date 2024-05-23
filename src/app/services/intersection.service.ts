@@ -5,6 +5,8 @@ import { IntersectionState } from '../enums/intersection-state';
 import { SimulationState } from '../enums/simulation-state';
 import { StreetDirection } from '../enums/street-direction';
 
+type OutgoingCar = {incomingLaneId: string, carColor: string};
+
 @Injectable({
   providedIn: 'root'
 })
@@ -30,12 +32,12 @@ export class IntersectionService {
     IntersectionState.HorizontalLeftTurnYellow,
   ];
 
-  private crosswalkTriggers: {[key: string]: boolean} = {
+  private crosswalkTriggers: Record<string, boolean> = {
     'VerticalStraightGreen': false,
     'HorizontalStraightGreen': false
   };
 
-  private leftTurnTriggers: {[key: string]: boolean} = {
+  private leftTurnTriggers: Record<string, boolean> = {
     'Down': false,
     'Left': false,
     'Right': false,
@@ -44,7 +46,7 @@ export class IntersectionService {
 
   private simulationSource = new BehaviorSubject(SimulationState.Stopped);
   private stateSource = new BehaviorSubject(IntersectionState.AllRed);
-  private outgoingCarSource = new BehaviorSubject('');
+  private outgoingCarSource = new BehaviorSubject({} as OutgoingCar);
   private carLoopSource = new BehaviorSubject(null);
   private currentState = IntersectionState.AllRed;
   private currentStateLoopIndex = 0;
@@ -94,8 +96,8 @@ export class IntersectionService {
     this.crosswalkTriggers[`${triggerPrefix}${this.TRIGGER_KEY}`] = true;
   }
 
-  public carWentThroughIntersection(direction: StreetDirection, id: number): void {
-    this.outgoingCarSource.next(`${direction}_${id}`);
+  public carWentThroughIntersection(direction: StreetDirection, id: number, carColor: string): void {
+    this.outgoingCarSource.next({incomingLaneId: `${direction}_${id}`, carColor: carColor});
   }
 
   public updateIsCarWaitingInTurnLaneStatus(direction: StreetDirection, isCarWaiting: boolean): void {

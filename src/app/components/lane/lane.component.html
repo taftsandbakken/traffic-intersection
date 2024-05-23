@@ -37,18 +37,18 @@
   @if (type === LaneType.Incoming) {
     <div class="car-container">
       <img
-        src="assets/red-car.png"
-        *ngFor="let incomingCarSpace of incomingCarLine"
+        [src]="getCarSrc(incomingCar)"
+        *ngFor="let incomingCar of incomingCarLine"
         class="car-img"
-        [class]="{'show-car': incomingCarSpace}">
+        [class]="{'show-car': incomingCar !== null}">
     </div>
   } @else {
     <div class="car-container outgoing-car-container">
       <img
-        src="assets/red-car.png"
-        *ngFor="let outgoingCarSpace of outgoingCarLine"
+        [src]="getCarSrc(outgoingCar)"
+        *ngFor="let outgoingCar of outgoingCarLine"
         class="car-img"
-        [class]="{'show-car': outgoingCarSpace}">
+        [class]="{'show-car': outgoingCar !== null}">
     </div>
   }
 </div>

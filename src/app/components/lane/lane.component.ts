@@ -8,6 +8,9 @@ import { LaneType } from '../../enums/lane-type';
 import { StreetDirection } from '../../enums/street-direction';
 import { IntersectionService } from '../../services/intersection.service';
 
+type CarLine = Array<string | null>;
+type OutgoingCar = {incomingLaneId: string, carColor: string};
+
 @Component({
   selector: 'app-lane',
   standalone: true,
@@ -32,8 +35,15 @@ export class LaneComponent implements OnDestroy {
   private readonly CHANCE_OF_INCOMING_CAR_RIGHT_LANE = 20;
   private readonly CHANCE_OF_INCOMING_CAR_STRAIGHT_LANE = 50;
   private readonly MIDDLE_OF_INTERSECTION_DURATION = 100;
-  private readonly TURN_LEFT_LANE_ID = 0;
+  private readonly CAR_ASSET_FOLDER = 'assets/cars/';
+  private readonly LEFT_TURN_LANE_ID = 0;
   private readonly CARS_PER_LINE = 4;
+  private readonly CAR_COLORS = [
+    'red-car',
+    'blue-car',
+    'yellow-car',
+    'white-car'
+  ];
 
   private chanceOfIncomingCarForCurrentLane = 0;
   private isVertical = false;
@@ -42,15 +52,15 @@ export class LaneComponent implements OnDestroy {
   simulationSubscription: Subscription|undefined;
   outgoingSubscription: Subscription|undefined;
   carLoopSubscription: Subscription|undefined;
-  incomingCarLine = Array(this.CARS_PER_LINE);
-  outgoingCarLine = Array(this.CARS_PER_LINE);
+  incomingCarLine: CarLine = Array(this.CARS_PER_LINE).fill(null);
+  outgoingCarLine: CarLine = Array(this.CARS_PER_LINE).fill(null);
 
   constructor(private intersectionService: IntersectionService) {}
 
   ngOnInit() {
     this.isVertical = this.direction === StreetDirection.Up || this.direction === StreetDirection.Down;
 
-    this.chanceOfIncomingCarForCurrentLane = this.id === this.TURN_LEFT_LANE_ID
+    this.chanceOfIncomingCarForCurrentLane = this.id === this.LEFT_TURN_LANE_ID
       ? this.CHANCE_OF_INCOMING_CAR_LEFT_LANE
       : this.id === this.laneCount - 1
         ? this.CHANCE_OF_INCOMING_CAR_RIGHT_LANE
@@ -68,12 +78,18 @@ export class LaneComponent implements OnDestroy {
   laneClick(): void {
     if (this.type === LaneType.Outgoing)
       return;
-    this.incomingCarLine[this.TURN_LEFT_LANE_ID] = true;
+    this.incomingCarLine[this.LEFT_TURN_LANE_ID] = this.getRandCarColor();
+  }
+
+  getCarSrc(carColor: string|null): string {
+    if (carColor)
+      return this.CAR_ASSET_FOLDER + carColor + '.png';
+    return '';
   }
 
   private setupCarLines(): void {
-    this.incomingCarLine = Array(this.CARS_PER_LINE).fill(false);
-    this.outgoingCarLine = Array(this.CARS_PER_LINE).fill(false);
+    this.incomingCarLine = Array(this.CARS_PER_LINE).fill(null);
+    this.outgoingCarLine = Array(this.CARS_PER_LINE).fill(null);
   }
 
   private setupObservables(): void {
@@ -97,10 +113,10 @@ export class LaneComponent implements OnDestroy {
 
   private setupOutgoingObservable() {
     if (this.type === LaneType.Outgoing) {
-      this.outgoingSubscription = this.intersectionService.$outgoingCarObs.subscribe((incomingLaneId: string) => {
+      this.outgoingSubscription = this.intersectionService.$outgoingCarObs.subscribe((outgoingCar: OutgoingCar) => {
         setTimeout(() => {
-          if (this.incomingLaneId === incomingLaneId)
-            this.outgoingCarLine[this.TURN_LEFT_LANE_ID] = true;
+          if (this.incomingLaneId === outgoingCar.incomingLaneId)
+            this.outgoingCarLine[this.LEFT_TURN_LANE_ID] = outgoingCar.carColor;
         }, this.MIDDLE_OF_INTERSECTION_DURATION);
       });
     }
@@ -121,7 +137,7 @@ export class LaneComponent implements OnDestroy {
 
     if (this.currentSimulationState === SimulationState.RunningAuto &&
       this.chanceOfIncomingCarForCurrentLane > Math.floor(Math.random() * 100)) {
-      this.incomingCarLine[this.TURN_LEFT_LANE_ID] = true;
+      this.incomingCarLine[this.LEFT_TURN_LANE_ID] = this.getRandCarColor();
     }
   }
 
@@ -129,34 +145,36 @@ export class LaneComponent implements OnDestroy {
     this.moveCarsForward(this.outgoingCarLine);
   }
 
-  private moveCarsForward(carLine: boolean[], canExitLane = true): void {
+  private moveCarsForward(carLine: CarLine, canExitLane = true): void {
     for (let i = carLine.length - 1; i >= 0; i--) {
       this.tryToMoveCarForward(carLine, i, canExitLane);
       this.checkIfCarCameFromBehind(carLine, i);
     }
-    if (this.id === this.TURN_LEFT_LANE_ID && this.type === LaneType.Incoming) {
-      this.intersectionService.updateIsCarWaitingInTurnLaneStatus(this.direction, carLine[this.CARS_PER_LINE - 1]);
+    if (this.id === this.LEFT_TURN_LANE_ID && this.type === LaneType.Incoming) {
+      this.intersectionService.updateIsCarWaitingInTurnLaneStatus(this.direction, carLine[this.CARS_PER_LINE - 1] != null);
     }
   }
 
-  private tryToMoveCarForward(carLine: boolean[], i: number, canExitLane: boolean): void {
+  private tryToMoveCarForward(carLine: CarLine, i: number, canExitLane: boolean): void {
     if (this.isNextLaneSpaceOpen(carLine, i, canExitLane)) {
       this.checkIfCarWentThroughIntersection(carLine, i);
-      carLine[i] = false;
+      carLine[i] = null;
     }
   }
 
-  private checkIfCarCameFromBehind(carLine: boolean[], i: number): void {
+  private checkIfCarCameFromBehind(carLine: CarLine, i: number): void {
     if (i > 0 && carLine[i - 1]) {
-      if (!carLine[i])
-        carLine[i - 1] = false;
-      carLine[i] = true;
+      const carBehind = carLine[i - 1];
+      if (carLine[i] == null) {
+        carLine[i - 1] = null;
+        carLine[i] = carBehind;
+      }
     }
   }
 
-  private checkIfCarWentThroughIntersection(carLine: boolean[], i: number) {
+  private checkIfCarWentThroughIntersection(carLine: CarLine, i: number) {
     if (carLine[i] && i === carLine.length - 1 && this.type === LaneType.Incoming)
-      this.intersectionService.carWentThroughIntersection(this.direction, this.id);
+      this.intersectionService.carWentThroughIntersection(this.direction, this.id, carLine[i]!);
   }
 
   private isIncomingLaneLightGreen(): boolean {
@@ -166,12 +184,12 @@ export class LaneComponent implements OnDestroy {
     return this.isIncomingHorizontalLaneLightGreen();
   }
 
-  private isNextLaneSpaceOpen(carLine: boolean[], i: number, canExitLane: boolean): boolean {
-    return canExitLane || (i < carLine.length - 1 && carLine[i + 1] === false);
+  private isNextLaneSpaceOpen(carLine: CarLine, i: number, canExitLane: boolean): boolean {
+    return canExitLane || (i < carLine.length - 1 && carLine[i + 1] === null);
   }
 
   private isIncomingVerticalLaneLightGreen(): boolean {
-    if (this.id === this.TURN_LEFT_LANE_ID) {
+    if (this.id === this.LEFT_TURN_LANE_ID) {
       return this.currentState === IntersectionState.VerticalLeftTurnGreen || this.currentState === IntersectionState.VerticalLeftTurnYellow;
     }
     return this.currentState === IntersectionState.VerticalStraightGreen ||
@@ -180,11 +198,15 @@ export class LaneComponent implements OnDestroy {
   }
 
   private isIncomingHorizontalLaneLightGreen(): boolean {
-    if (this.id === this.TURN_LEFT_LANE_ID) {
+    if (this.id === this.LEFT_TURN_LANE_ID) {
       return this.currentState === IntersectionState.HorizontalLeftTurnGreen || this.currentState === IntersectionState.HorizontalLeftTurnYellow;
     }
     return this.currentState === IntersectionState.HorizontalStraightGreen ||
       this.currentState === IntersectionState.HorizontalStraightGreenWithBlinkingVerticalYellow ||
       this.currentState === IntersectionState.HorizontalStraightYellow;
+  }
+
+  private getRandCarColor(): string {
+    return this.CAR_COLORS[Math.floor(Math.random() * this.CAR_COLORS.length)];
   }
 }

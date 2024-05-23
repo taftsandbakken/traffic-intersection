@@ -20,10 +20,10 @@ export class TrafficLightComponent implements OnInit {
   readonly ASSETS_HOME = 'assets/lights/';
 
   currentStateKey = '';
-  stateToAssetMap: {[key: string]: {
+  stateToAssetMap: Record<string, {
     standard: string,
     leftTurn: string
-  }} = {};
+  }> = {};
 
   ngOnInit() {
     const isVertical = this.direction === StreetDirection.Up || this.direction === StreetDirection.Down;
